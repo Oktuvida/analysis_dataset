@@ -9,7 +9,8 @@
 -- 
 -- object: colombianos_registrados_exterior | type: DATABASE --
 -- DROP DATABASE IF EXISTS colombianos_registrados_exterior;
-CREATE DATABASE colombianos_registrados_exterior;
+CREATE DATABASE colombianos_registrados_exterior
+	ENCODING = 'UTF8';
 -- ddl-end --
 
 \connect colombianos_registrados_exterior;
@@ -27,24 +28,12 @@ CREATE TABLE public."Pais" (
 ALTER TABLE public."Pais" OWNER TO postgres;
 -- ddl-end --
 
--- object: public.location | type: TYPE --
--- DROP TYPE IF EXISTS public.location CASCADE;
-CREATE TYPE public.location AS
-(
- latitude float8,
- longitude float8
-);
--- ddl-end --
-ALTER TYPE public.location OWNER TO postgres;
--- ddl-end --
-
 -- object: public."OficinaRegistro" | type: TABLE --
 -- DROP TABLE IF EXISTS public."OficinaRegistro" CASCADE;
 CREATE TABLE public."OficinaRegistro" (
 	id integer NOT NULL,
 	"id_Pais" integer,
 	nombre text,
-	ubicacion public.location,
 	CONSTRAINT "OficinaRegistro_pk" PRIMARY KEY (id)
 );
 -- ddl-end --
