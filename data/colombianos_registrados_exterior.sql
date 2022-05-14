@@ -12,6 +12,7 @@
 CREATE DATABASE colombianos_registrados_exterior;
 -- ddl-end --
 
+\connect colombianos_registrados_exterior;
 
 -- object: public."Pais" | type: TABLE --
 -- DROP TABLE IF EXISTS public."Pais" CASCADE;
