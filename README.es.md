@@ -74,6 +74,21 @@ class Connection:
 ```
 ### Ubicación de los archivos
 
-Para iniciar
+Para iniciar se tiene la carpeta Entregas, en esta se tienen las entregas realizadas del proyecto.
 
-AANAOWNFOWANF
+La carpeta data contiene la base de datos en formato sql y los datos en .csv
+
+Después, se tiene la carpeta modules, que hace referencia a los modulos. eEn primer lugar se tiene el executor que ejecuta las busquedas SQL. El parser un traductor que convierte las cadenas de texto a SQL. El reader lee las sentencias SQL o CSV.
+
+Finalmente tenemos el main:
+
+Tenemos el table_viewer, para poder visualizar los datos, que requiere el nombre de la tabla; los filtros que se refiere a los limitadores y agrupadores y las columnas que se quieren mostrar, siendo una lista de strings sobre las columnas que se desea mostrar, junto con la opcion de mostrar el nombre de las columnas.
+
+Por otro lado, se tiene la función data_insertion, que inicializa el ejecutor csv y la querly; se indican los datos invalidos; las columnas, el valor inicial de su id como el registro de las llaves primarias ya ingresadas de cada tabla; y una única consulta que servirá como cola a todos los inserts necesarios, separados por punto y coma. Lo único que resta es iterar las filas del CSV, siendo el orden de ejecución de las tablas según cuantas   relaciones tenga esta (de menor a mayor). En el momento que encuentre que alguna tupla aún no ha sido agregada a la tabla, es decir, que aún no este en registrador de la tabla, será agregada a la cola de la query.
+
+### Datos no considerados
+
+Para el desarrollo del proyecto, se decidio no usar 
+
+### Importante
+No se modifica el .gitignore, requeriments.txt y settings.py
