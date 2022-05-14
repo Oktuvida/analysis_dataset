@@ -1,3 +1,5 @@
+#Lee las sentencias SQL o CSV.
+
 from typing import Iterator, Union
 
 

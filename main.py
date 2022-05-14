@@ -9,7 +9,7 @@ from resources.parser import SqlParser
 from settings import Connection, Files, Variables
 import zipfile
 
-def data_viewer(
+def table_viewer(
     table_name: str, 
     filters: list[str] = ["limit 15"], 
     columns: list[str | int] | slice = slice(0, None),
