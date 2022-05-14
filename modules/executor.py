@@ -1,5 +1,3 @@
-#Ejecutor de consultas SQL.
-
 import psycopg2
 import psycopg2.extras
 from typing import Union

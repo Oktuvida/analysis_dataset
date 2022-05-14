@@ -1,5 +1,3 @@
-#Convierte cadenas de texto a SQL.
-
 from typing import Union
 
 from settings import Variables
