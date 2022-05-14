@@ -72,8 +72,4 @@ class Connection:
     HOST = "127.0.0.1" # La dirección IP
     PORT = "5432" # El puerto en el cual se encuentra el servicio PostgreSQL
 ```
-### Ubicación de los archivos
 
-Para iniciar
-
-AANAOWNFOWANF
