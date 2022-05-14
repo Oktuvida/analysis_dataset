@@ -65,21 +65,6 @@ def data_viewer(
 
 def data_insertion() -> None:
     """
-    Insert all rows with the columns of interest from the CSV into the database.
-
-    First we initialize the csv reader; the sql query executor; the data we consider invalid; 
-    both the columns, the initial value of their id and the record of the primary keys already 
-    entered for each table; and a single query that will serve as a queue for all the necessary 
-    inserts, separated by semicolons.
-
-    The only thing left is to iterate the rows of the CSV, 
-    being the order of execution of the tables according to how 
-    many relations it has (from smallest to largest). As soon as 
-    it finds that a tuple has not yet been added to the table, 
-    i.e. is not yet in the table recorder, it will be added to the query queue.
-
-    -------------------------------------------------------------------
-
     Insertar todas las filas con las columnas de interés del CSV en la base de datos.
 
     Primero se inicializa el lector de csv; el ejecutor de consultas sql; los datos que concideramos inválidos;
