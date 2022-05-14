@@ -1,11 +1,10 @@
 #!/usr/bin/env python
 
-from argparse import ArgumentError
 from os import path
 from pycountry_convert import country_alpha2_to_continent_code, country_alpha3_to_country_alpha2
-from resources.executor import SqlExecutor
-from resources.reader import CsvReader
-from resources.parser import SqlParser
+from modules.executor import SqlExecutor
+from modules.reader import CsvReader
+from modules.parser import SqlParser
 from settings import Connection, Files, Variables
 import zipfile
 
@@ -27,6 +26,7 @@ def table_viewer(
             The filters applied to the query, e.g. ["group by 1 2", "limit 5"]. Its default value is ["limit 15"].
         columns: list[str | int] | slice
             The columns to be selected, e.g. ["hi-mom", 2, 4] or slice(0, 5)
+        display_column_names: bool
     """
 
     if not isinstance(filters, list):
@@ -65,6 +65,21 @@ def table_viewer(
 
 def data_insertion() -> None:
     """
+    Insert all the rows with the columns of interest from the CSV into the database.
+
+    First we initialize the csv reader; the sql query executor; the data we consider invalid;
+    both the columns, the initial value of their id and the record of the primary keys already
+    entered for each table; and a single query that will serve as a queue for all the necessary inserts,
+    separated by semicolons.
+
+    The only thing left is to iterate the rows of the CSV,
+    being the order of execution of the tables according to how many
+    relations it has (from smallest to largest). When it finds
+    that a tuple has not yet been added to the table 
+    (i.e. it is not yet in the table recorder) it will be added to the query queue.
+
+    ------------------------------------------------------------------
+
     Insertar todas las filas con las columnas de interés del CSV en la base de datos.
 
     Primero se inicializa el lector de csv; el ejecutor de consultas sql; los datos que concideramos inválidos;
@@ -75,8 +90,8 @@ def data_insertion() -> None:
     Lo único que resta es iterar las filas del CSV,
     siendo el orden de ejecución de las tablas según cuantas
     relaciones tenga esta (de menor a mayor). En el momento
-    que encuentre que alguna tupla aún no ha sido agregada a la tabla,
-    es decir, que aún no este en registrador de la tabla, será agregada a la cola de la query.
+    que encuentre que alguna tupla aún no ha sido agregada a la tabla 
+    (es decir, que aún no este en registrador de la tabla) será agregada a la cola de la query.
     """
 
     csv_reader = CsvReader(Files.CSV)
@@ -101,7 +116,7 @@ def data_insertion() -> None:
     NivelAcademico_columns = ["id", "nombre"]
     Pais_columns = ["id", "id_Continente", "codigo", "nombre"]
     Continente_columns = ["id", "codigo", "nombre"]
-    OficinaRegistro_columns = ["id", "id_Pais", "nombre", "ubicacion"]
+    OficinaRegistro_columns = ["id", "id_Pais", "nombre"]
 
     Pais_recorder = dict()
     OficinaRegistro_recorder = dict()
@@ -148,7 +163,6 @@ def data_insertion() -> None:
         nivel_academico = row[7]
         genero = row[9]
         estatura = int(row[11]) if row[11] != "-1" else Variables.Sql.NULL_VALUE
-        localizacion = row[12]
         cantidad_personas = int(row[13])
 
         if codigo_iso_continente not in Continente_recorder:
@@ -183,8 +197,10 @@ def data_insertion() -> None:
                 query += SqlParser.get_insert_query(
                     "OficinaRegistro",
                     OficinaRegistro_columns,
-                    [OficinaRegistro_id_counter, Pais_recorder[codigo_iso_pais],
-                        oficina_registro, localizacion]
+                    [
+                        OficinaRegistro_id_counter, Pais_recorder[codigo_iso_pais],
+                        oficina_registro
+                    ]
                 )
                 OficinaRegistro_id_counter += 1
 
@@ -248,8 +264,7 @@ def main() -> None:
     if not path.exists(Files.CSV):
         with zipfile.ZipFile(f"{Files.CSV}.zip") as zip_file:
             zip_file.extractall(Files.PATH)
-
-    data_viewer("Continente")
+    data_insertion()
 
 
 if __name__ == "__main__":
