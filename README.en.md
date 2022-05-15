@@ -1,4 +1,4 @@
-# Analysis of a dataset using relational and entity-relationship diagrams, PostreSQL database and Python.
+# Analysis of a dataset using relational and entity-relationship diagrams, PostreSQL database and Python
 
 *Read this in other languages: [English](/README.en.md), [Español](/README.md)*.
 
@@ -8,7 +8,7 @@ The dataset used here is public and can be consulted at [this link](https://www.
 
 In the dataset we are presented with a general demographic scheme of a person and how many colombian emigrants belong to this person. In our analysis we agreed on the following data as variables of interest:
 
-<center>
+<div align="center">
 
 |        Variable        | Description                                                        |
 | :--------------------: | :----------------------------------------------------------------- |
@@ -22,34 +22,43 @@ In the dataset we are presented with a general demographic scheme of a person an
 |         Height         | Height in centimeters.                                             |
 |   Number of persons    | The number of people who match <br>the demographic description.    |
 
-</center>
+</div>
 
-Regarding the implementation, given the relational diagram:
+Regarding the implementation, given the entity-relationship diagram:
+
+<div align="center">
+
+![entity-relationship diagram](/images/ER.svg)
+
+</div>
+
+Or its equivalent relational diagram:
+
+<div align="center">
 
 ![relational diagram](/images/3FN.svg)
 
-the large amount of identifiers not belonging to the dataset (which implies doing it manually) added to the dimension of the data present in the [CSV file](/data/colombianos_registrados_exterior.csv.zip), we consider more pertinent to use insertions with Python using hashmaps (dictionaries) and queues instead of using the native reader offered by PostgreSQL ([copy](https://www.postgresql.org/docs/current/sql-copy.html)).
+</div>
+
+led us to have a large number of identifiers not belonging to the dataset (which implies doing it manually) which, added to the dimension of the data present in the [CSV file](/data/colombianos_registrados_exterior.csv.zip), we considered more pertinent to use Python insertions using hashmaps (dictionaries) and queues instead of using the native reader offered by PostgreSQL ([copy](https://www.postgresql.org/docs/current/sql-copy.html)).
 
 At the same time, we consider ideal to compress the [CSV file](/data/colombianos_registrados_exterior.csv.zip) to optimize the space occupied in the repository.
 
-# Directory structure
+## Directory structure
 
 To begin with, there is the folder [entregas](/entregas/), which contains the project deliveries in .pdf format.
 
-The [data](/data/) folder contains the database in sql format and the data in compressed .csv format.
+The [data](/data/) folder contains the database in .sql format and the data in .csv compressed in .zip format.
 
-Then there is the [modules](/modules/) folder, which refers to, as its name indicates, the Python modules. Given a language (for the moment CSV and SQL), first we have the [executor](/modules/executor.py), which executes the language statements (if available); the [parser](/modules/parser.py), a translator that converts the given parameters to a valid statement for the language; and the [reader](/modules/reader.py), which reads a file with the language format.
+Then there is the folder [modules.py](/modules/), which refers to, as its name indicates, the Python modules. Given a language (for the moment CSV and SQL), first you have the file [executor.py](/modules/executor.py), which executes the language statements (if available); the file [parser.py](/modules/parser.py), a translator that converts the given parameters to a valid language statement; the file [reader.py](/modules/reader.py), which reads a file with the language format; and the file [object.py](/modules/object.py), which creates language objects, such as tables.
 
-Finally we have the [main](/main.py).
+Finally we have the file [main.py](/main.py).
 
-There is the table_viewer to be able to visualize the data. This requires the name of the table; the filters, such as limiters, groupers and sorters; the columns to be displayed, being a list of strings or integers, or a slice over the columns to be displayed; and finally the option to display the name of the columns.
+In this file we have a menu in which we can do two actions with respect to the database: insert the data from the CSV to this one or visualize the tuples of its tables.
 
-On the other hand, we have the function data_insertion where the csv executor is initialized; the invalid data; the columns, the initial value of its id as the record of the primary keys already entered for each table; and a single query that will serve as a queue to all the necessary inserts, separated by semicolon. The only thing left is to iterate the rows of the CSV, being the order of execution of the tables according to how many relations it has (from smallest to largest). When it finds that a tuple has not yet been added to the table, that is to say, that it is not yet in the table recorder, it will be added to the query queue.
+In the main function, besides executing this menu, the CSV file is also decompressed in case it is not already there and an equivalent of our database tables are initialized in terms of Python code.
 
-Finally, the main function only verifies that the CSV file is decompressed and then immediately executes the data_insertion function.
-
-
-## Setup.
+## Setup
 
 ### Requeriments
 

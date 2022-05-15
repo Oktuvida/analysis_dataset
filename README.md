@@ -1,4 +1,4 @@
-# Análisis de un conjunto de datos usando diagramas relacionales y de entidad-relación, base de datos PostreSQL y Python.
+# Análisis de un conjunto de datos usando diagramas relacionales y de entidad-relación, base de datos PostreSQL y Python
 
 *Lee esto en otros idiomas: [English](/README.en.md), [Español](/README.md)*.
 
@@ -8,7 +8,7 @@ El conjunto de datos aquí usado es público y puede puede ser consultado en el 
 
 En el conjunto de datos nos presentan un esquema general demográfico de una persona y cuántos colombianos emigrantes pertenecen a esta. En nuestro análisis acordamos los siguientes datos como variables de interés:
 
-<center>
+<div align="center">
 
 |       Variable       | Descripción                                                                |
 | :------------------: | :------------------------------------------------------------------------- |
@@ -22,33 +22,44 @@ En el conjunto de datos nos presentan un esquema general demográfico de una per
 |       Estatura       | Altura en centímetros.                                                     |
 | Cantidad de personas | La cantidad de personas que coinciden <br> con la descripción demográfica. |
 
-</center>
+</div>
 
-En lo que respecta a la implementación, dado el diagrama relacional:
+En lo que respecta a la implementación, dado el diagrama entidad-relación:
+
+<div align="center">
+
+![Diagrama entidad-relación](/images/ER.svg)
+
+</div>
+
+
+O su equivalente al diagrama relacional:
+
+<div align="center">
 
 ![Diagrama relacional](/images/3FN.svg)
 
-la gran cantidad de identificadores no pertenecientes al dataset (lo cual implica hacerlo manualmente) sumado a la dimensión de los datos presentes en el [archivo CSV](/data/colombianos_registrados_exterior.csv.zip), consideramos más pertinente usar inserciones con Python usando hashmaps (diccionarios) y colas en lugar de usar el lector nativo que ofrece PostgreSQL ([copy](https://www.postgresql.org/docs/current/sql-copy.html)).
+</div>
+
+nos llevó a tener gran cantidad de identificadores no pertenecientes al conjunto de datos (lo cual implica hacerlo manualmente) que, sumado a la dimensión de los datos presentes en el [archivo CSV](/data/colombianos_registrados_exterior.csv.zip), consideramos más pertinente usar inserciones con Python usando hashmaps (diccionarios) y colas en lugar de usar el lector nativo que ofrece PostgreSQL ([copy](https://www.postgresql.org/docs/current/sql-copy.html)).
 
 A su vez, consideramos idóneo comprimir el [archivo CSV](/data/colombianos_registrados_exterior.csv.zip) para optimizar el espacio ocupado en el repositorio.
 
 ## Estructura del directorio
 
-Para empezar, está la carpeta [entregas](/entregas/), en esta se tienen las entregas realizadas del proyecto en .pdf.
+Para empezar, está la carpeta [entregas](/entregas/). En esta se tienen las entregas realizadas del proyecto en .pdf.
 
-La carpeta [data](/data/) contiene la base de datos en formato sql y los datos en .csv comprimidos.
+La carpeta [data](/data/) contiene la base de datos en formato .sql y los datos .csv comprimidos en formato .zip.
 
-Después se tiene la carpeta [modules](/modules/), que hace referencia a, como indica su nombre, los modulos de Python. Dado un lenguaje (por el momento CSV y SQL), en primer lugar se tiene el [executor](/modules/executor.py), que ejecuta las sentencias del lenguaje (si dispone de estas); el [parser](/modules/parser.py), un traductor que convierte los parámetros dados a una sentencia válida para el lenguaje; y el [reader](/modules/reader.py), que lee un archivo con el formato del lenguaje.
+Después se tiene la carpeta [modules.py](/modules/), que hace referencia a, como indica su nombre, los modulos de Python. Dado un lenguaje (por el momento CSV y SQL), en primer lugar se tiene el archivo [executor.py](/modules/executor.py), que ejecuta las sentencias del lenguaje (si dispone de estas); el archivo [parser.py](/modules/parser.py), un traductor que convierte los parámetros dados a una sentencia válida para el lenguaje; el archivo [reader.py](/modules/reader.py), que lee un archivo con el formato del lenguaje; y el archivo [object.py](/modules/object.py), que crea objetos del lenguaje, como lo serían las tablas.
 
-Finalmente tenemos el [main](/main.py).
+Finalmente tenemos el archivo [main.py](/main.py).
 
-Alli está el table_viewer para poder visualizar los datos. Este requiere el nombre de la tabla; los filtros, como por ejemplo los limitadores, agrupadores y ordenadores; las columnas que se quieren mostrar, siendo una lista de strings o integers, o un slice sobre las columnas que se desea mostrar; y finalmente la opcion de mostrar el nombre de las columnas.
+En este archivo se tiene un menú en el cual se pueden hacer dos acciones con respecto a la base de datos: insertar los datos del CSV a esta o visualizar las tuplas de sus tablas.
 
-Por otro lado, se tiene la función data_insertion donde se inicializa el ejecutor csv; los datos invalidos; las columnas, el valor inicial de su id como el registro de las llaves primarias ya ingresadas de cada tabla; y una única consulta que servirá como cola a todos los inserts necesarios, separados por punto y coma. Lo único que resta es iterar las filas del CSV, siendo el orden de ejecución de las tablas según cuantas relaciones tenga esta (de menor a mayor). En el momento que encuentre que alguna tupla aún no ha sido agregada a la tabla, es decir, que aún no este en registrador de la tabla, será agregada a la cola de la query.
+En la función main además de ejecutar este menu también se descomprime el archivo CSV en caso de no estarlo y se inicializan un equivalente de nuestras tablas de la base de datos en términos de código Python.
 
-Finalmente en la función main únicamente se verifica que el archivo CSV esté descomprimido para inmediatamente después ejecutar la función data_insertion.
-
-## Configuración.
+## Configuración
 
 ### Requisitos
 
