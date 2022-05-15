@@ -1,4 +1,4 @@
-from typing import Iterator, Union
+from typing import Iterator
 
 
 class SqlReader:
@@ -72,13 +72,20 @@ class CsvReader:
             f"Error. The file must be in \".{format}\" format")
         self.delimiter = delimiter
         self.__file = file
+        self.__headers = self.get_headers()
 
-    def __get_columns(self, row: str) -> Union[list[str], None]:
+    def __get_columns(
+            self, row: str,
+            filtered_columns: list[int] | slice = slice(0, None)
+        ) -> list[str] | None:
         """
         Get the columns of a row.
 
         Arguments:
             row: str
+        
+        Optional arguments:
+            filtered_columns: list[int] | slice = slice(0, None)
 
         Returns:
             A list with the value of each column of the row, or null if the row is empty.
@@ -87,6 +94,7 @@ class CsvReader:
         row = row.strip()
         if len(row) == 0:
             return None
+
         in_quotes = False
         last_line = ""
         columns = []
@@ -99,38 +107,34 @@ class CsvReader:
                 columns.append(last_line)
                 last_line = ""
         columns.append(last_line)
-        return columns
+        match filtered_columns:
+            case slice():
+                return columns[filtered_columns]
+            case list():
+                return [columns[i] for i in filtered_columns]
+            case _:
+                raise ValueError(f"The data type {type(filtered_columns)} of filtered columns isn't valid")
 
     def get_headers(
-        self, filtered_headers: Union[slice, list[int]] = slice(0, None)
-    ) -> list[str]:
+        self, filtered_headers: slice | list[int] = slice(0, None)
+    ) -> list[str] | None:
         """
         Get the headers from the CSV file
 
         Optional arguments:
             filtered_headers: slice | list[int]
                 The desired headers. By default they are all.
-                It can be a slice, e.g. slice(0, 3); 
-                it can be a list of integers, e.g [1, 3].
 
         Returns:
             A list with the name of each header.
         """
 
-        headers = []
-        with open(self.__file) as file:
-            line = self.__get_columns(file.readline())
-            if line is not None:
-                match filtered_headers:
-                    case slice():
-                        headers = line[filtered_headers]
-                    case list():
-                        headers = [line[i] for i in filtered_headers]
-        return headers
+        return list(self.get_rows(row_limit = 1, filtered_columns = filtered_headers, with_headers = True))[0]
 
     def get_rows(
         self, row_limit: int = -1,
-        filtered_columns: Union[slice, list[int], list[str]] = slice(0, None),
+        filtered_columns: slice | list[int | str] = slice(0, None),
+        with_headers: bool = False
     ) -> Iterator[list[str]]:
         """ 
         Get the rows from the CSV file.
@@ -138,29 +142,30 @@ class CsvReader:
         Optional arguments:
             row_limit: int
                 The number of rows. By default they are all.
-            filtered_columns: slice | list[int] | list[str]
+            filtered_columns: slice | list[int | str]
                 Columns for each row. By default they are all.
-                It can be a slice, e.g. slice(1, 5); 
-                a list with the index corresponding to the column, e.g. [1, 5, 9];
-                a list with the exact name corresponding to the column, e.g. ["Hello", "World!"].
+            with_headers: bool
 
         Returns:
             A csv row iterator.
         """
+        if isinstance(filtered_columns, list):
+            for index, column in enumerate(filtered_columns):
+                match column:
+                    case int():
+                        assert 0 <= column < len(self.__headers), ValueError(f"{column} isn't in the columns size range")
+                    case str():
+                        filtered_columns[index] = self.__headers.index(column)
+                    case _:
+                        raise ValueError(f"{column} isn't a valid value")
 
         with open(self.__file) as file:
-            file.readline()
+            if not with_headers:
+                file.readline()
             num_row = 0
             while num_row != row_limit:
-                line = self.__get_columns(file.readline())
+                line = self.__get_columns(file.readline(), filtered_columns)
                 if line is None:
                     break
-                match filtered_columns:
-                    case slice():
-                        yield line[filtered_columns]
-                    case list():
-                        yield [line[i] for i in filtered_columns]
-                    case _:
-                        raise ValueError(
-                            "the filtered columns must be a list or a slice.")
+                yield line
                 num_row += 1

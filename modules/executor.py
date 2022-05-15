@@ -1,6 +1,5 @@
 import psycopg2
 import psycopg2.extras
-from typing import Union
 
 
 class SqlExecutor:
@@ -19,11 +18,11 @@ class SqlExecutor:
             user: str
                 The user to log in with.
             password: str
-                The user's password
+                The user's password.
             host: str
-                The IP Address. By default 127.0.0.1
+                The IP Address. By default 127.0.0.1.
             port: str
-                The port. By default 5432
+                The port. By default 5432.
 
         Private attributes:
             database, user, password.
@@ -37,7 +36,7 @@ class SqlExecutor:
 
     def __connect(self) -> 'psycopg2.connection':
         """
-        Connect to the database
+        Connect to the database.
 
         Returns:
             A psycopg2.connection.
@@ -51,7 +50,7 @@ class SqlExecutor:
             port=self.__port
         )
 
-    def run_query(self, query: str, params: tuple = None) -> Union[tuple, None]:
+    def run_query(self, query: str, params: tuple = None) -> list[tuple] | None:
         """
         Execute a query
 
@@ -69,7 +68,8 @@ class SqlExecutor:
         with self.__connect() as conn:
             with conn.cursor() as cursor:
                 if params is not None:
-                    res = psycopg2.extras.execute_values(cursor, query, params, template = None, page_size = 100, fetch = True)
+                    res = psycopg2.extras.execute_values(
+                        cursor, query, params, template=None, page_size=100, fetch=True)
                 else:
                     cursor.execute(query)
                     if cursor.pgresult_ptr is not None:
