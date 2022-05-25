@@ -4,7 +4,7 @@ import pandas as pd
 import dash_bootstrap_components as dbc
 from typing import Any
 from dash import html, dcc
-from modules.components import Table
+from modules.objects import HtmlTable
 from settings import Connection
 from modules.executors import SqlExecutor
 
@@ -118,7 +118,7 @@ class Introduction(View):
                 datos como variables de interés:\
                 """
                 ),
-                Table(
+                HtmlTable(
                     ["Variable", "Descripción"],
                     rows=[
                         ["Edad", "Edad actual dada en años"],
@@ -840,7 +840,7 @@ class EducationLevelView(View):
 
         self._add_child(
             [
-                Table(
+                HtmlTable(
                     headers=table_columns,
                     rows=res,
                 ).get_container(),

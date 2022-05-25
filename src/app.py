@@ -1,10 +1,9 @@
 #!/usr/bin/env python3.10
 
-from ast import Num
 import dash_bootstrap_components as dbc
 from contextlib import suppress
 from dash import Dash, html, Output, Input, dcc
-from modules.components import Sidebar
+from modules.objects import HtmlSidebar
 from modules.views import (
     EducationLevelView,
     Introduction,
@@ -45,7 +44,7 @@ class StaticElements:
 
 
 def main():
-    sidebar = Sidebar(
+    sidebar = HtmlSidebar(
         "Emigrantes colombianos", "Aquí encontrarás todas las gráficas posibles"
     )
     sidebar.add_link("Inicio", "#", className="active")

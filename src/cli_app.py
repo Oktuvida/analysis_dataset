@@ -1,12 +1,10 @@
 #!/usr/bin/env python
 
-import zipfile
-from os import path
 from modules.objects import SqlTable
 from rich.console import Console
 from rich.tree import Tree
 from modules.utils import data_insertion, initialize_tables, prepare_files
-from settings import Files, TableReference, Variables
+from settings import TableReference, Variables
 
 
 def get_menu_option() -> str:
