@@ -1,0 +1,10 @@
+# Carpetas
+**/images
+entregas
+env
+**/__pycache__
+
+# Archivos
+*.md
+docker-compose.yml
+Dockerfile

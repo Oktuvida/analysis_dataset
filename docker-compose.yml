@@ -1,0 +1,47 @@
+version: "2.5"
+
+services:
+  db:
+    image: postgres:alpine
+    container_name: dash_psql
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${pg_user}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    environment:
+      POSTGRES_PASSWORD: ${pg_password}
+      POSTGRES_USER: ${pg_user}
+      POSTGRES_HOST_AUTH_METHOD: "scram-sha-256"
+    ports:
+      - "${localhost}:5433:${pg_port}"
+    networks:
+      - main_network
+    volumes:
+      - "./assets/${pg_database}.sql:/docker-entrypoint-initdb.d/init.sql"
+      - "main_volume:/var/lib/postgresql/data"
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        port: ${dash_port}
+    container_name: dash_app
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "${localhost}:${dash_port}:${dash_port}"
+    networks:
+      - main_network
+    volumes:
+      - "main_volume:/app"
+
+networks:
+  main_network:
+    name: ${pg_database}_network
+
+volumes:
+  main_volume:
+    name: ${pg_database}_volume
