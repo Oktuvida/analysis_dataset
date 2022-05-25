@@ -14,7 +14,13 @@ from modules.views import (
     SpecializationView,
 )
 from settings import Files, Server
-from modules.utils import data_insertion, initialize_tables
+from modules.utils import data_insertion, initialize_tables, prepare_files
+
+
+with suppress(Exception):
+    prepare_files()
+    initialize_tables()
+    data_insertion()
 
 app = Dash(
     __name__,
@@ -39,10 +45,6 @@ class StaticElements:
 
 
 def main():
-    with suppress(Exception):
-        initialize_tables()
-        data_insertion()
-
     sidebar = Sidebar(
         "Emigrantes colombianos", "Aquí encontrarás todas las gráficas posibles"
     )
@@ -114,7 +116,8 @@ def update_number_cities_displayed(number_cities) -> "html.Div":
 
 
 @app.callback(
-    Output("education_level", "children"), [Input("continent_selector", "value"), Input("education_selector", "value")]
+    Output("education_level", "children"),
+    [Input("continent_selector", "value"), Input("education_selector", "value")],
 )
 def show_frequency_table(continent, education) -> "html.Div":
     changed = False

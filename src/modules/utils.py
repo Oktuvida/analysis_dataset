@@ -1,3 +1,5 @@
+import zipfile
+from os import path
 from pycountry_convert import (
     country_alpha2_to_continent_code,
     country_alpha3_to_country_alpha2,
@@ -238,3 +240,9 @@ def data_insertion() -> None:
 
     print("It's time to run that huge query!")
     sql_executor.run_query(query)
+
+
+def prepare_files() -> None:
+    if not path.exists(Files.CSV):
+        with zipfile.ZipFile(f"{Files.CSV}.zip") as zip_file:
+            zip_file.extractall(Files.PATH)

@@ -5,7 +5,7 @@ from os import path
 from modules.objects import SqlTable
 from rich.console import Console
 from rich.tree import Tree
-from modules.utils import data_insertion, initialize_tables
+from modules.utils import data_insertion, initialize_tables, prepare_files
 from settings import Files, TableReference, Variables
 
 
@@ -205,9 +205,7 @@ def menu() -> None:
 
 
 def main() -> None:
-    if not path.exists(Files.CSV):
-        with zipfile.ZipFile(f"{Files.CSV}.zip") as zip_file:
-            zip_file.extractall(Files.PATH)
+    prepare_files()
     initialize_tables()
     menu()
 
