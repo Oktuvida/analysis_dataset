@@ -821,12 +821,19 @@ class EducationLevelView(View):
 
         length = sum([frequency for _, frequency in res])
 
-        table_columns = [*columns, "frecuencia relativa", "porcentaje", "acumulado"]
+        table_columns = [
+            *columns,
+            "frecuencia acumulada",
+            "frecuencia relativa",
+            "porcentaje",
+            "acumulado",
+        ]
 
         res = [
             [
                 name,
                 frequency,
+                0,
                 round(frequency / length, 3),
                 f"{round(frequency / length * 100, 3)}%",
             ]
@@ -836,6 +843,7 @@ class EducationLevelView(View):
         acum = 0
         for i, el in enumerate(res):
             acum += float(el[1] / length * 100)
+            res[i][2] = el[1] if i == 0 else (res[i - 1][2] + el[1])
             res[i].append(f"{round(acum, 3)}%")
 
         self._add_child(
